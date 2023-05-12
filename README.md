@@ -60,3 +60,40 @@ Uma vez que saibamos um pouco mais sobre como construir um servidor dentro de um
 
 * Cron: gerenciador de tarefas do Linux que nos permite executar comandos em um determinado momento. Podemos automatizar algumas tarefas apenas dizendo ao cron qual comando queremos executar em um horário específico. Por exemplo, se quisermos reiniciar nosso servidor todos os dias às 4:00 da manhã, em vez de termos que acordar nesse horário, o cron fará isso por nós.
 * Wall: comando usado pelo usuário root para enviar uma mensagem a todos os usuários atualmente conectados ao servidor. Se o administrador do sistema quiser alertar sobre uma grande mudança no servidor que possa fazer com que os usuários sejam desconectados, o usuário root poderia alertá-los com o wall.
+
+_______
+# Instalação
+_____
+
+## *Sudo*
+### Passo 1: Instalar o sudo
+Mude para o root e seu ambiente usando o comando su -.
+```
+su -
+```
+Mude para o root e seu ambiente usando o comando su -.
+```
+apt install sudo
+```
+Verifique se o sudo foi instalado corretamente usando dpkg -l | grep sudo. (Opcional)
+```
+dpkg -l | grep sudo
+```
+
+### Passo 2: Adicionar usuário ao grupo sudo
+Adicione o usuário ao grupo sudo usando adduser <username> sudo.
+```
+adduser <username> sudo
+```
+ou
+```
+usermod -aG sudo <username>
+```
+Verifique se o usuário foi adicionado com sucesso ao grupo sudo usando getent group sudo.
+```
+getent group sudo
+```
+Reinicie para que as alterações entrem em vigor, faça login e verifique os poderes do sudo usando sudo -v.
+```reboot```
+```sudo -v```
+### Passo 3: Executando comandos com privilégios de root
