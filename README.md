@@ -159,11 +159,11 @@ Habilite o Firewall usando o seguinte comando:
 ```
 sudo ufw enable
 ```
-Permita conexões de entrada usando a porta 4242 usando sudo.
+Permita conexões de entrada usando a porta 4242 usando:
 ```
 sudo ufw allow 4242
 ```
-Verifique o status do UFW usando.
+Verifique o status do UFW usando:
 ```
 sudo ufw status
 ```
@@ -175,9 +175,43 @@ ssh <nome_de_usuário>@<endereço_ip> -p 4242
 ```
 Para terminar a seesão de ssh pode usar ```logout``` ou ```exit```.
 
+## Gerenciamento de Usuários
+### Passo 1: Configurando uma Política de Senha Forte
+Idade da senha
+Configure a política de idade da senha em /etc/login.defs usando:
+```
+sudo vi /etc/login.defs
+```
+Para definir a expiração da senha a cada 30 dias, substitua na linha ```160 PASS_MAX_DAYS```.
+Para definir o número mínimo de dias entre as mudanças de senha em 2 dias, substitua a ```161 PASS_MIN_DAYS```.
+Para enviar uma mensagem de aviso ao usuário 7 dias (o padrão já é 7) antes do vencimento da senha, mantenha a linha abaixo como está.
+Quando acabar de configurar o ficheiro as linhas tem que ficar da seguinte forma:
+```
+160 PASS_MAX_DAYS   30
+161 PASS_MIN_DAYS   2
+162 PASS_WARN_AGE   7
+```
+### Segurança da senha
+Em segundo lugar, para configurar políticas relacionadas à força da senha, instale o pacote libpam-pwquality.
+```
+sudo apt install libpam-pwquality
+```
+Verifique se o libpam-pwquality foi instalado com sucesso usando ```dpkg -l | grep libpam-pwquality``` (Opcional).
+Configure a política de força da senha em /etc/pam.d/common-password, especificamente a linha 25:
+```
+sudo vi /etc/pam.d/common-password
 
-
-
+...
+25 password        requisite                       pam_pwquality.so retry=3
+...
+```
+Dentro do ficherio é preciso adicionar as seguintes keywords:
+Para definir o comprimento mínimo da senha em 10 caracteres ```minlen```.
+Para exigir que a senha contenha pelo menos um caractere maiúsculo e um caractere numérico 
+Finalmente a linha 25 devera ficar assim:
+```
+password        requisite                       pam_pwquality.so retry=3 minlen=10 ucredit=-1 dcredit=-1 maxrepeat=3 reject_username difok=7 enforce_for_root
+```
 
 
 
