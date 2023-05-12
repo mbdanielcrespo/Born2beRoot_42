@@ -67,21 +67,18 @@ _____
 
 ## *Sudo*
 ### Passo 1: Instalar o sudo
-Mude para o root e seu ambiente usando o comando su -.
+Mude para o root e seu ambiente usando o seguinte comando:
 ```
 su -
 ```
-Mude para o root e seu ambiente usando o comando su -.
+Instale o sudo no seu ambiente usando o seguinte comando:
 ```
 apt install sudo
 ```
-Verifique se o sudo foi instalado corretamente usando dpkg -l | grep sudo. (Opcional)
-```
-dpkg -l | grep sudo
-```
+Verifique se o sudo foi instalado corretamente usando ``` dpkg -l | grep sudo ``` (Opcional)
 
 ### Passo 2: Adicionar usuário ao grupo sudo
-Adicione o usuário ao grupo sudo usando adduser <username> sudo.
+Adicione o usuário ao grupo sudo usando o seguinte comando:
 ```
 adduser <username> sudo
 ```
@@ -89,11 +86,110 @@ ou
 ```
 usermod -aG sudo <username>
 ```
-Verifique se o usuário foi adicionado com sucesso ao grupo sudo usando getent group sudo.
+Verifique se o usuário foi adicionado com sucesso ao grupo sudo usando o seguinte comando:
 ```
 getent group sudo
 ```
-Reinicie para que as alterações entrem em vigor, faça login e verifique os poderes do sudo usando sudo -v.
+Reinicie para que as alterações entrem em vigor, faça login e verifique os poderes do sudo usando o seguinte comando:
 ```reboot```
 ```sudo -v```
+  
 ### Passo 3: Executando comandos com privilégios de root
+A partir daqui, execute comandos com privilégios de root usando o prefixo sudo. Por exemplo:
+```
+sudo apt update
+```
+
+### Passo 4: Configurando o sudo.
+Para configurar o sudo é precisso acceder a configuração do sudo, para aceder ao ficheiro de configurações por norma faz-se ao correr:
+```
+sudo visudo
+```
+Isto abre o ficheiro de configuração com um editor de texto seguro, que não permitira guradar o ficheiro com erros, isto permite **evitar problemas de desconfiguração do sudo**. 
+Tambem é possivel configurar o sudo usando:
+```
+sudo vi /etc/sudoers.d/<nome_do_arquivo>
+```
+O parametro ```passwd_tries``` servira para limitar a autenticação usando sudo a 3 tentativas (o padrão é 3 de qualquer maneira) no caso de uma senha incorreta.
+O parametro ```badpass_message``` servira para adicionar uma mensagem de erro personalizada no caso de uma senha incorreta.
+O parametro ```logfile="/var/log/sudo/<nome_do_arquivo>"``` servira para registrar todos os comandos sudo em /var/log/sudo/<nome_do_arquivo>.
+Os parametros ```log_input, log_output``` e ```iolog_dir="/var/log/sudo"``` serviram para arquivar todas as entradas e saídas do sudo em /var/log/sudo/.
+O parametro ```requiretty``` exige uma interface para correr comandos de sudo, assim evita que sejam corridos por scripts automatizados.
+O parametro ```secure_path``` define os caminhos do sudo.
+O ficheiro de configuração ou as alterações ao sudo deverão ficar da seguinte forma:
+```
+Defaults        passwd_tries=3
+Defaults        badpass_message="<custom-error-message>"
+Defaults        logfile="/var/log/sudo/<filename>"
+Defaults        log_input,log_output
+Defaults        iolog_dir="/var/log/sudo"
+Defaults        requiretty
+Defaults         secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/snap/bin"
+```
+
+## SSH
+### Passo 1: Instalando e Configurando o SSH
+Instale o openssh-server usando:
+```
+sudo apt install openssh-server
+```
+Verifique se o openssh-server foi instalado com sucesso usando ```dpkg -l | grep ssh``` (Opcional).
+Configure o SSH usando o seguinte comando para abrir o ficheiro de configuração do SSH e alterar o numero da porta a ser usado pelo serviço:
+```
+sudo vi /etc/ssh/sshd_config
+```
+Altere a linha 13 de ```#Port 22``` por ```Port 4242```.
+Altere a linha 32 de ```#PermitRootLogin prohibit-password``` para ```PermitRootLogin no``` 
+Verifique o status do SSH usando sudo service ssh status.
+```
+sudo service ssh status
+```
+ou
+```
+systemctl status ssh
+```
+
+### Passo 2: Instalando e Configurando o UFW
+Instale o ufw usando:
+```
+sudo apt install ufw
+```
+Verifique se o ufw foi instalado com sucesso usando ```dpkg -l | grep ufw``` (Opcional).
+Habilite o Firewall usando o seguinte comando:
+```
+sudo ufw enable
+```
+Permita conexões de entrada usando a porta 4242 usando sudo.
+```
+sudo ufw allow 4242
+```
+Verifique o status do UFW usando.
+```
+sudo ufw status
+```
+### Passo 3: Conectando-se ao Servidor via SSH
+É possivel ver o endereço de ip da sua maquina ao correr ```hostname -I``` e o nome de usuario a traves ```hostname```
+Conecte-se à sua máquina virtual usando o seguinte comando:
+```
+ssh <nome_de_usuário>@<endereço_ip> -p 4242
+```
+Para terminar a seesão de ssh pode usar ```logout``` ou ```exit```.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
